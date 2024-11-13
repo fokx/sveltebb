@@ -24,15 +24,10 @@
 
 </script>
 
-<style>
-    @import '$lib/styles.css';
-</style>
 
 <div class="centered">
 
-	<h2>My Posts:</h2>
-	<a href="/">Return to Main Page</a>
-	<hr>
+	<h2>My Posts</h2>
 	{#if user}
 	<Post isDeletedListPage={true} postList={postListDeletedLocal} user={user} sync_status={sync_status} show_author={false}/>
 		{:else}

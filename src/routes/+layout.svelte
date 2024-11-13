@@ -1,1 +1,14 @@
-<slot />
+<script>
+	let { children, data } = $props();
+	let user = $derived(data.user);
+	let postListCloud = $derived(data.cloud_posts);
+</script>
+<style>
+    @import '$lib/styles.css';
+</style>
+<nav class="title">
+	<a href="/" style="display: inline;">SvelteBB</a>
+	<span style="display: inline; margin-left: 15px;">logged in as: <a
+		href="/my-posts">{user ? user.username : "Guest"}</a> </span>
+</nav>
+{@render children()}

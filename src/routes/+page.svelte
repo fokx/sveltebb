@@ -224,16 +224,10 @@
 
 </script>
 
-<style>
-    @import '$lib/styles.css';
-</style>
+
 
 <div class="centered">
-	<nav class="title">
-		<a href="/" style="display: inline;">SvelteBB</a>
-		<span style="display: inline; margin-left: 15px;">logged in as: <a
-			href="/my-posts">{user ? user.username : "Guest"}</a> </span>
-	</nav>
+
 
 	<div class="header">
 		<p>{count_status_local}</p>
