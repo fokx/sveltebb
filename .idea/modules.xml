@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/todo-app-svelte.iml" filepath="$PROJECT_DIR$/.idea/todo-app-svelte.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sveltebb.iml" filepath="$PROJECT_DIR$/.idea/sveltebb.iml" />
     </modules>
   </component>
 </project>

@@ -1,6 +1,16 @@
-import { generateId } from 'lucia';
 import { PUBLIC_DEXIE_ID_LENGTH } from '$env/static/public';
+import { generateRandomString } from "@oslojs/crypto/random";
 
+const random = {
+	read(bytes) {
+		crypto.getRandomValues(bytes);
+	}
+};
+
+export function generateId(length) {
+	const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+	return generateRandomString(random, alphabet, length);
+}
 export function gen_todo_id() {
 	return generateId(PUBLIC_DEXIE_ID_LENGTH);
 }

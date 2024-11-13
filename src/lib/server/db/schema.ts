@@ -1,6 +1,5 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from 'lucia';
-
+import { generateId } from '$lib/utils.js';
 const common_timestamps = {
 	created_at: integer({ mode: 'timestamp' }).$default(() => new Date()),
 	deleted_at: integer({ mode: 'timestamp' }),

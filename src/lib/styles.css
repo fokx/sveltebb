@@ -282,7 +282,8 @@ ul.todos button:hover {
 
 
 .header {
-    display: inline;
+    display: flex;
+    margin-top: 5px;
 
     p {
         display: inline;

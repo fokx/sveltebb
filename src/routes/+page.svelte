@@ -267,7 +267,11 @@
 </style>
 
 <div class="centered">
-	<h2>{user ? user.username + "'s" : "My"} TODO List</h2>
+	<div class="title">
+		<h2 style="display: inline;">SvelteBB</h2>
+		<h4 style="display: inline; margin-left: 15px;">you are: {user ? user.username : "Guest"} </h4>
+	</div>
+
 	<div class="header">
 		<p>{count_status_local}</p>
 		<div class="status" id="sync-status"></div>
@@ -312,7 +316,7 @@
 			}
 		};
 	}}>
-		<input bind:value={newItem} name="content" placeholder="new todo item.." required type="text" />
+		<input bind:value={newItem} name="content" placeholder="new post.." required type="text" />
 		<button aria-label="Add" disabled={!newItem}>Add</button>
 	</form>
 

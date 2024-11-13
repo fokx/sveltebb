@@ -1,6 +1,6 @@
 #!/bin/zsh
 host=mnz
-rsync -av /f/todo-app-svelte $host:/srv/ --exclude={"node_modules/*","lucia.db","src/lib/server/db/sqlite.db",".env","build/*"} --delete
-ssh $host chown -R forum:forum /srv/todo-app-svelte
+rsync -av /f/sveltebb $host:/srv/ --exclude={"node_modules/*","lucia.db","src/lib/server/db/sqlite.db",".env","build/*"} --delete
+ssh $host chown -R forum:forum /srv/sveltebb
 
 pnpm i && pnpm run build && pnpm push:db && killall -9 node ; HOST=127.0.0.1 PORT=4001 node build
