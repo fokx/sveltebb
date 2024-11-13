@@ -26,11 +26,11 @@ export const posts = sqliteTable('posts', {
 		.notNull()
 		.$default(() => generateId(64)),
 	user_id: integer().notNull(),
-	user_name: text({ length: 65535 }),
+	user_name: text({ length: 65535 }).notNull(),
 	text: text({ length: 65535 }).notNull(),
-	deleted: integer({ mode: 'boolean' }),
-	is_main: integer({ mode: 'boolean' }),
-	main_post_id: text({ length: 64 }),
+	deleted: integer({ mode: 'boolean' }).notNull(),
+	is_main_post: integer({ mode: 'boolean' }).notNull(),
+	main_post_id: text({ length: 64 }).notNull(),
 	reply_to_post_id: text({ length: 64 }),
 	...common_timestamps
 });

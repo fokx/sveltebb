@@ -1,6 +1,6 @@
 #!/bin/zsh
 host=mnz
-rsync -av /f/sveltebb $host:/srv/ --exclude={"node_modules/*","lucia.db","src/lib/server/db/sqlite.db",".env","build/*"} --delete
+rsync -av /f/sveltebb $host:/srv/ --exclude={"sqlite.db","node_modules/*","lucia.db","src/lib/server/db/sqlite.db",".env","build/*"} --delete
 ssh $host chown -R forum:forum /srv/sveltebb
 
 pnpm i && pnpm run build && pnpm push:db && HOST=127.0.0.1 PORT=4002 node build

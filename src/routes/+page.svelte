@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { enhance } from '$app/forms';
-	import Post from '$lib/components/post-list.svelte';
+	import PostList from '$lib/components/post-list.svelte';
 	import { derived } from 'svelte/store';
 	import { liveQuery } from 'dexie';
 	import { gen_post_id, getEnumName, SyncStatus } from '$lib/utils.js';
@@ -15,10 +15,7 @@
 	let postListCloud = $derived(data.cloud_posts);
 	let newItem = $state('');
 	let postListNotDeletedLocal = $state();
-	let postListNotDeletedUncompletedCountLocal = $state();
-	let postListNotDeletedCountLocal = $state();
 	let new_post_id;
-	const CONFIRM_WORD = 'del';
 	let previously_offline = false;
 	let just_synced = false;
 	let postListLocal = liveQuery(() =>
@@ -26,27 +23,8 @@
 	);
 
 	let sync_status = $state(SyncStatus.unknown);
-	let count_status_local = $state();
 	postListLocal.subscribe((posts_local) => {
 			postListNotDeletedLocal = posts_local.filter(t => !t.deleted);
-			postListNotDeletedUncompletedCountLocal = posts_local.filter(t => !t.deleted).filter(t => !t.done).length;
-			postListNotDeletedCountLocal = posts_local.filter(t => !t.deleted).length;
-			// });
-			// let count_status_local = $derived.by(() => {
-			let res;
-			if (postListNotDeletedCountLocal > 0) {
-				if (postListNotDeletedUncompletedCountLocal === 0) {
-					res = 'All completed';
-				} else if (postListNotDeletedUncompletedCountLocal === postListNotDeletedCountLocal) {
-					res = 'None completed';
-				} else {
-					res = `${postListNotDeletedUncompletedCountLocal} / ${postListNotDeletedCountLocal} uncompleted`;
-				}
-			} else {
-				// <span style="display: block;  text-align: center;"><em>* Nothing yet *</em></span>;
-				res = '';
-			}
-			count_status_local = res;
 		}
 	);
 
@@ -163,14 +141,16 @@
 		let ids_only_in_cloud = (new Set(map_cloud_ids.keys())).difference((new Set(map_local_ids.keys())));
 		for (let id of ids_only_in_cloud) {
 			let cloud = map_cloud_ids.get(id);
+			// todo: drop unneeded fields instead of enumerate required ones
 			dbDexie.posts.add({
 				id: id,
 				user_id: cloud.user_id,
 				user_name: cloud.user_name,
 				text: cloud.text,
-				done: cloud.done,
 				deleted: cloud.deleted,
-				synced: true,
+				is_main_post: cloud.is_main_post,
+				main_post_id: cloud.main_post_id,
+				reply_to_post_id: cloud?.reply_to_post_id,
 				updated_at: cloud.updated_at,
 				created_at: cloud.created_at
 			});
@@ -221,16 +201,10 @@
 		}
 	}
 
-
 </script>
 
-
-
 <div class="centered">
-
-
 	<div class="header">
-		<p>{count_status_local}</p>
 		<div class="status" id="sync-status"></div>
 		<div class="status" id="online-status">online?</div>
 	</div>
@@ -254,9 +228,9 @@
 			user_id: user ? user.id : null,
 			user_name: user ? user.username : null,
 			text: newItem,
-			done: false,
 			deleted: false,
-			synced: false,
+			is_main_post: true,
+			main_post_id: new_post_id,
 			created_at: new Date(),
 			updated_at: new Date()
 		});
@@ -279,7 +253,7 @@
 	</form>
 
 	<br />
-	<Post postList={postListNotDeletedLocal} user={user} sync_status={sync_status} show_author={true} />
+	<PostList postList={postListNotDeletedLocal} user={user} sync_status={sync_status} show_author={true} />
 
 	{#if user}
 		<p>to view changes to your todos on <em>another</em> browser/device, you have to wait a few seconds.</p>

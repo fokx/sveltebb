@@ -280,7 +280,6 @@ ul.posts button:hover {
     opacity: 1;
 }
 
-
 .header {
     display: flex;
     margin-top: 5px;
@@ -294,13 +293,14 @@ ul.posts button:hover {
     }
 
     .status {
-        padding: 5px;
+        padding: 6px;
         border-radius: 3px;
         text-align: center;
         display: inline;
         opacity: 0.9;
         border: 1px dashed #b3b3b3;
         font-size: small;
+        margin-right: 10px;
     }
 
 

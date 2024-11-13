@@ -19,14 +19,13 @@
 		{#each postListSorted as post, index (post.id)}
 			<!--			<li transition:fade={{  duration: 100}}>-->
 			<li in:fly={{ y: 20 }} out:slide>
-
+				<a href="{'/post/'+post.id}">
 				<span>{post.text}
 					{#if show_author}
 						<span style="font-size: x-small;">({post.user_name})</span>
 					{/if}
 				</span>
-				<!--<input class:checked={post.done} type="text" name="tmp" value={post.text}/>-->
-
+				</a>
 			</li>
 		{/each}
 	{/if}

@@ -17,9 +17,10 @@ export async function POST(event) {
 						user_id: user.id,
 						user_name: user.username,
 						text: a.text,
-						done: a.done,
 						deleted: a.deleted,
-						synced: true
+						is_main_post: a.is_main_post,
+						main_post_id: a.main_post_id,
+						reply_to: a?.reply_to,
 					});
 				} else {
 					existing = existing[0];
