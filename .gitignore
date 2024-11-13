@@ -26,4 +26,5 @@ dexie-cloud.json
 
 # DB
 src/lib/server/db/sqlite.db
+/sqlite.db
 /lucia.db

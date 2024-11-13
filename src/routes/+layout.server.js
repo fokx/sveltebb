@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db/client.js';
-import { todos } from '$lib/server/db/schema.ts';
+import { posts } from '$lib/server/db/schema.ts';
 import { desc, eq } from 'drizzle-orm';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -11,9 +11,8 @@ export async function load(event) {
 	} else {
 		cloud_posts = await db
 			.select()
-			.from(todos)
-			.where(eq(todos.user_id, user.id))
-			.orderBy(desc(todos.id));
+			.from(posts)
+			.orderBy(desc(posts.id));
 	}
 	return {
 		user: event.locals.user,

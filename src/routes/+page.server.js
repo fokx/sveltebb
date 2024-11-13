@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db/client.js';
-import { todos } from '$lib/server/db/schema.ts';
+import { posts } from '$lib/server/db/schema.ts';
 import { eq, not } from 'drizzle-orm';
 
 export const actions = {
@@ -8,9 +8,10 @@ export const actions = {
 		const formData = await request.formData();
 		if (user) {
 			try {
-				await db.insert(todos).values({
+				await db.insert(posts).values({
 					id: formData.get('id'),
 					user_id: user.id,
+					user_name: user.username,
 					text: formData.get('content'),
 					done: false,
 					deleted: false,
@@ -22,16 +23,16 @@ export const actions = {
 			}
 		}
 	},
-	deleteTodo: async function ({ locals, request }) {
+	deletePost: async function ({ locals, request }) {
 		let user = locals.user;
 		const formData = await request.formData();
 		if (user) {
 			// soft delete
 			await db
-				.update(todos)
+				.update(posts)
 				.set({ deleted: true })
-				.where(eq(todos.id, formData.get('id')));
-			// await db.delete(todos).where(eq(todos.id, formData.get('id')));
+				.where(eq(posts.id, formData.get('id')));
+			// await db.delete(posts).where(eq(posts.id, formData.get('id')));
 		}
 	},
 	deleteAllCompleted: async function ({ locals, request }) {
@@ -39,31 +40,31 @@ export const actions = {
 		const formData = await request.formData();
 		if (user) {
 			// soft delete
-			await db.update(todos).set({ deleted: true }).where(eq(todos.done, true));
+			await db.update(posts).set({ deleted: true }).where(eq(posts.done, true));
 		}
 	},
-	editTodo: async function ({ locals, request }) {
+	editPost: async function ({ locals, request }) {
 		let user = locals.user;
 		const formData = await request.formData();
 		if (user && formData.get('new_text')) {
 			await db
-				.update(todos)
+				.update(posts)
 				.set({ text: formData.get('new_text') })
-				.where(eq(todos.id, formData.get('id')));
+				.where(eq(posts.id, formData.get('id')));
 		}
 	},
-	toggleTodo: async function ({ locals, request }) {
+	togglePost: async function ({ locals, request }) {
 		let user = locals.user;
 		const formData = await request.formData();
 		// const isChecked = formData.get('myCheckbox') === 'on';
 		// let prev_done = formData.get('prev_done');
 		if (user) {
 			await db
-				.update(todos)
+				.update(posts)
 				.set({
-					done: not(todos.done)
+					done: not(posts.done)
 				})
-				.where(eq(todos.id, formData.get('id')));
+				.where(eq(posts.id, formData.get('id')));
 		}
 	}
 };

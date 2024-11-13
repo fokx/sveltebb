@@ -1,29 +1,36 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from '$lib/utils.js';
+import { generateRandomString } from '@oslojs/crypto/random';
+
+const random = {
+	read(bytes) {
+		crypto.getRandomValues(bytes);
+	}
+};
+
+function generateId(length) {
+	const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
+	return generateRandomString(random, alphabet, length);
+}
+
 const common_timestamps = {
 	created_at: integer({ mode: 'timestamp' }).$default(() => new Date()),
 	deleted_at: integer({ mode: 'timestamp' }),
-	updated_at: integer({ mode: 'timestamp' }).$onUpdate(() => new Date()),
+	updated_at: integer({ mode: 'timestamp' }).$onUpdate(() => new Date())
 };
 
-const todo_extra_timestamps = {
-	done_at: integer({ mode: 'timestamp' }),
-	synced_at: integer({ mode: 'timestamp' })
-};
 
-export const todos = sqliteTable('todos', {
+
+export const posts = sqliteTable('posts', {
 	id: text('id')
 		.primaryKey()
 		.notNull()
 		.$default(() => generateId(64)),
 	user_id: integer().notNull(),
 	user_name: text({ length: 65535 }),
-	email: text({ length: 65535 }),
 	text: text({ length: 65535 }).notNull(),
-	done: integer({ mode: 'boolean' }),
 	deleted: integer({ mode: 'boolean' }),
-	synced: integer({ mode: 'boolean' }),
-	user_agent: text({ length: 65535 }),
-	...common_timestamps,
-	...todo_extra_timestamps
+	is_main: integer({ mode: 'boolean' }),
+	main_post_id: text({ length: 64 }),
+	reply_to_post_id: text({ length: 64 }),
+	...common_timestamps
 });
