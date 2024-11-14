@@ -9,18 +9,18 @@
 		dbDexie.posts.filter(t => t.main_post_id === data.slug).toArray()
 	);
 
-	let post_main = $state();
-	let posts_replies = $state();
+	let main_post = $state();
+	let reply_posts = $state();
 
 	postsLocal.subscribe((posts_local) => {
-			post_main = posts_local.filter(t => t.is_main_post)[0];
-			posts_replies = posts_local.filter(t => !t.is_main_post);
+			main_post = posts_local.filter(t => t.is_main_post)[0];
+			reply_posts = posts_local.filter(t => !t.is_main_post);
 		}
 	);
 </script>
-{#if post_main}
-	<Post post={post_main} />
-	{#each posts_replies as post, index (post.id)}
+{#if main_post}
+	<Post post={main_post} />
+	{#each reply_posts as post, index (post.id)}
 		<Post post={post} />
 	{/each}
 {:else}
