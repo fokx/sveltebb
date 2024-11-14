@@ -26,7 +26,6 @@ export const posts = sqliteTable('posts', {
 		.notNull()
 		.$default(() => generateId(64)),
 	user_id: integer().notNull(),
-	user_name: text({ length: 65535 }).notNull(),
 	text: text({ length: 65535 }).notNull(),
 	deleted: integer({ mode: 'boolean' }).notNull(),
 	is_main_post: integer({ mode: 'boolean' }).notNull(),

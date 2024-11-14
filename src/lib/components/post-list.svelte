@@ -22,7 +22,7 @@
 				<a href="{'/post/'+post.id}">
 				<span>{post.text}
 					{#if show_author}
-						<span style="font-size: x-small;">({post.user_name})</span>
+						<span style="font-size: x-small;">({post.user_id})</span>
 					{/if}
 				</span>
 				</a>

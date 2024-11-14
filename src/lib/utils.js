@@ -49,3 +49,4 @@ export const SyncStatus = make_enum([
 export function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms ?? 200));
 }
+export const USER_ID_NOT_LOGGED_IN = -1;

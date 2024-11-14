@@ -5,7 +5,7 @@
 	import PostList from '$lib/components/post-list.svelte';
 	import { derived } from 'svelte/store';
 	import { liveQuery } from 'dexie';
-	import { gen_post_id, getEnumName, SyncStatus } from '$lib/utils.js';
+	import { gen_post_id, getEnumName, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { browser } from '$app/environment';
 	import { invalidateAll } from '$app/navigation';
 
@@ -141,19 +141,7 @@
 		let ids_only_in_cloud = (new Set(map_cloud_ids.keys())).difference((new Set(map_local_ids.keys())));
 		for (let id of ids_only_in_cloud) {
 			let cloud = map_cloud_ids.get(id);
-			// todo: drop unneeded fields instead of enumerate required ones
-			dbDexie.posts.add({
-				id: id,
-				user_id: cloud.user_id,
-				user_name: cloud.user_name,
-				text: cloud.text,
-				deleted: cloud.deleted,
-				is_main_post: cloud.is_main_post,
-				main_post_id: cloud.main_post_id,
-				reply_to_post_id: cloud?.reply_to_post_id,
-				updated_at: cloud.updated_at,
-				created_at: cloud.created_at
-			});
+			dbDexie.posts.add(cloud);
 		}
 		let ids_only_in_local = (new Set(map_local_ids.keys())).difference((new Set(map_cloud_ids.keys())));
 		for (let id of ids_only_in_local) {
@@ -207,6 +195,7 @@
 	<div class="header">
 		<div class="status" id="sync-status"></div>
 		<div class="status" id="online-status">online?</div>
+		<button style="opacity: 75%;" onclick={() => {sync_status=SyncStatus.syncing; invalidateAll();}}>Update</button>
 	</div>
 
 	<form action="?/createpost" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
@@ -225,8 +214,7 @@
 		sync_status = SyncStatus.syncing;
 		dbDexie.posts.add({
 			id: new_post_id,
-			user_id: user ? user.id : null,
-			user_name: user ? user.username : null,
+			user_id: user ? user.id : USER_ID_NOT_LOGGED_IN,
 			text: newItem,
 			deleted: false,
 			is_main_post: true,
@@ -254,16 +242,8 @@
 
 	<br />
 	<PostList postList={postListNotDeletedLocal} user={user} sync_status={sync_status} show_author={true} />
-
-	{#if user}
-		<p>to view changes to your todos on <em>another</em> browser/device, you have to wait a few seconds.</p>
-	{:else}
-		<p>⚠️ Your posts are stored in your
-			<a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">browser</a>
-			and will get <strong>lost</strong> when you clear browsing data.</p>
-		<p>Sign in to store data in the cloud and get synced between browsers / devices.</p>
-	{/if}
-
+	<p>You don't need to click the <kbd>Update</kbd> button frequently. </p>
+	<p>Normally, you just have to wait for a few seconds for changes made by others to appear.</p>
 </div>
 
 

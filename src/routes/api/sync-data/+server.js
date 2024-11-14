@@ -15,7 +15,6 @@ export async function POST(event) {
 					await db.insert(posts).values({
 						id: a.id,
 						user_id: user.id,
-						user_name: user.username,
 						text: a.text,
 						deleted: a.deleted,
 						is_main_post: a.is_main_post,
