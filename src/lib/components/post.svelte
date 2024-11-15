@@ -1,10 +1,11 @@
 <script>
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { enhance } from '$app/forms';
-	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN, GetUserName } from '$lib/utils.js';
+	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { liveQuery } from 'dexie';
 	import Self from './post.svelte';
 	import { fly, slide } from 'svelte/transition';
+	import User from '$lib/components/user.svelte';
 
 	let {
 		post = $bindable(),
@@ -13,7 +14,6 @@
 		indent = $bindable()
 	} = $props();
 	let user = $derived(data.user);
-	let cloud_users = $derived(data.cloud_users);
 
 	let newItem = $state('');
 	let new_post_id;
@@ -43,7 +43,7 @@
 	{/each}
 	<div style="display:inline;">
 		<span>{post.text}</span>
-		<span style="font-size: x-small;">({GetUserName(cloud_users, post.user_id)})</span>
+		<User data={data} user_id={post.user_id} />
 		{#if indent !== 0}
 			<div class="post-reply">
 				{#if !show_reply_form}

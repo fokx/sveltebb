@@ -73,13 +73,3 @@ export function SetOnlineIndicator(isOnline) {
 	}
 }
 
-export function GetUserName(cloud_users, user_id) {
-	if (user_id === USER_ID_NOT_LOGGED_IN) {
-		return 'Guest';
-	}
-	let user = cloud_users.filter(u => u.id === user_id);
-	if (user.length === 1) {
-		return user[0].username;
-	}
-	return `u${user_id}`;
-}

@@ -1,10 +1,11 @@
 <script>
-	import { GetEnumName, GetUserName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
+	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { liveQuery } from 'dexie';
 	import { onMount } from 'svelte';
+	import User from '$lib/components/user.svelte';
 
 	let { children, data } = $props();
 	let user = $derived(data.user);
@@ -15,7 +16,17 @@
 	let postListLocal = liveQuery(() =>
 		dbDexie.posts.orderBy('id').desc().toArray()
 	);
+	let post_list_local=$state([]);
+	postListLocal.subscribe((posts_local) => {
+		post_list_local = postListLocal;
+	});
 	$effect(() => {
+		// todo: sync users to local in a better way
+		if (postListCloud){
+			dbDexie.posts.bulkPut(postListCloud).then(() => {
+				console.log(`Successfully synced ${postListCloud.length} posts`);
+			});
+		}
 		if (userListCloud) {
 			dbDexie.users.bulkPut(userListCloud).then(() => {
 				console.log(`Successfully synced ${userListCloud.length} users`);
@@ -167,7 +178,7 @@
 	<a href="/" style="display: inline;">SvelteBB</a>
 	{#if user}
 		<span style="display: inline; ">
-			<a href="/my-posts">{GetUserName(cloud_users, user.id)}</a>
+		<User data={data} user_id={user.id} href="/my-posts" />
 		</span>
 	{:else}
 		<span>You are a guest.</span>
@@ -183,4 +194,4 @@
 	</div>
 
 </nav>
-{@render children({ sync_status })}
+{@render children({ sync_status, post_list_local })}

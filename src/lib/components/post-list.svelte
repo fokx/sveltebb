@@ -1,15 +1,13 @@
 <script>
 	import { fly, slide } from 'svelte/transition';
-	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN, GetUserName } from '$lib/utils.js';
+	import User from '$lib/components/user.svelte';
 
 	let {
 		data = $bindable(),
 		postList = $bindable(),
-		user,
-		show_author = true,
+		show_author = true
 	} = $props();
 	let postListSorted = $derived(postList ? postList.toSorted((b, a) => new Date(a.created_at) - new Date(b.created_at)) : []);
-	let cloud_users = $derived(data.cloud_users);
 	let checked = false;
 	let new_text;
 
@@ -22,7 +20,7 @@
 				<a href={'/post/'+post.id} class="post-link">
        <span>{post.text}
 				 {#if show_author}
-         <span style="font-size: x-small;">({GetUserName(cloud_users, post.user_id)})</span>
+					 <User data={data} user_id={post.user_id} />
         {/if}
        </span>
 				</a>
