@@ -1,5 +1,5 @@
 <script>
-	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN, GetUserName } from '$lib/utils.js';
+	import { GetEnumName, GetUserName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { dbDexie } from '$lib/db-dexie.js';
@@ -177,7 +177,7 @@
 	<div class="header">
 		<div class="status" id="sync-status"></div>
 		<div class="status" id="online-status">online?</div>
-		<button style="opacity: 75%;"
+		<button style="opacity: 75%; padding: 0.25rem 0.5rem; font-size: 0.7rem;"
 						onclick={() => {sync_status=SyncStatus.syncing; invalidateAll(); MergeRemoteAndLocal();}}>Update
 		</button>
 	</div>

@@ -43,7 +43,7 @@ fs.readFile(filePath, 'utf8').then(async (data) => {
 		user['silenced_till'] = convertStringToDate(user['silenced_till']);
 		user['groups'] = JSON.stringify(user['groups']);
 	});
-	// for (const user of users_json) {
-	await db.insert(users).values(users_data_from_json); //.onConflictDoUpdate({ target: users.id, set: user });
-	// }
+	for (const user of users_data_from_json) {
+		await db.insert(users).values(user); //.onConflictDoUpdate({ target: users.id, set: user });
+	}
 });

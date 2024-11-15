@@ -81,5 +81,5 @@ export function GetUserName(cloud_users, user_id) {
 	if (user.length === 1) {
 		return user[0].username;
 	}
-	return 'Unknown';
+	return `u${user_id}`;
 }
