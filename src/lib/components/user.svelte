@@ -38,16 +38,17 @@
 </script>
 
 <a href={href ?? `/user/${user_id}`} style="font-size: x-small;">
-	<!--{#await getUserName(user_id)}-->
-	<!--	{/await}-->
-	{#await getUser(user_id)}
-		<p>user: {user_id}</p>
-	{:then user}
-		<p>
-			<img src={getAvatarUrl(user)} alt="User Avatar" width="16" height="16" />
-			{user?.username}!
-		</p>
-	{:catch error}
-		<p style="color: red">{error.message} user: {user_id}</p>
-	{/await}
+	<div class="user">
+		{#await getUser(user_id)}
+			user: {user_id}
+		{:then user}
+				<img src={getAvatarUrl(user)} alt="User Avatar" width="16" height="16" />
+				{user?.username}
+		{:catch error}
+			<div style="color: red">{error.message} user: {user_id}</div>
+		{/await}
+
+	</div>
+
+	
 </a>

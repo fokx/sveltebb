@@ -14,22 +14,18 @@
 	let user = $derived(data.user);
 	let postListCloud = $derived(data.cloud_posts);
 	let newItem = $state('');
-	let postListNotDeletedMainLocal = $state();
 	let new_post_id;
-	let postListLocal = liveQuery(() =>
-		dbDexie.posts.orderBy('id').desc().toArray()
-	);
+	const criterionFunction = t => t.is_main_post;
 
-	postListLocal.subscribe((posts_local) => {
-			postListNotDeletedMainLocal = posts_local.filter(t => t.is_main_post).filter(t => !t.deleted);
-		}
+	let postListMainLocal = liveQuery(() =>
+		dbDexie.posts.orderBy('id').filter(criterionFunction).desc().toArray()
 	);
 
 </script>
 
 <div class="centered">
 
-	<form action="?/create_post" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+	<form action="?/create_post" class="new-post-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 		// debounce the form submission
 		formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -72,7 +68,9 @@
 	</form>
 
 	<br />
-	<PostList data={data}  postList={postListNotDeletedMainLocal}  show_author={true} />
+	{#if $postListMainLocal}
+		<PostList data={data} postList={$postListMainLocal} show_author={true} />
+	{/if}
 	<p>You don't need to click the <kbd>Update</kbd> button frequently. </p>
 	<p>Normally, you just have to wait for a few seconds for changes made by others to appear.</p>
 </div>

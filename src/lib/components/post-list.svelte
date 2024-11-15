@@ -7,20 +7,20 @@
 		postList = $bindable(),
 		show_author = true
 	} = $props();
-	let postListSorted = $derived(postList ? postList.toSorted((b, a) => new Date(a.created_at) - new Date(b.created_at)) : []);
+	let postListSorted = $derived(postList ? postList.toSorted((a, b) => a.created_at - b.created_at) : []);
 	let checked = false;
 	let new_text;
 
 </script>
 
 <ul class="posts">
-	{#if postListSorted?.length}
+	{#if postListSorted}
 		{#each postListSorted as post, index (post.id)}
 			<li in:fly={{ y: 20 }} out:slide>
 				<a href={'/post/'+post.id} class="post-link">
        <span>{post.text}
 				 {#if show_author}
-					 <User data={data} user_id={post.user_id} />
+						<User data={data} user_id={post.user_id} />
         {/if}
        </span>
 				</a>

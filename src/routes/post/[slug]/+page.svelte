@@ -14,7 +14,7 @@
 
 </script>
 
-{#await getPost}
+{#await getPost()}
 	<p></p>
 {:then post}
 	<Post post={post} data={data} sync_status={sync_status} indent={0} />

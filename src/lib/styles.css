@@ -252,6 +252,13 @@ ul.posts button:hover {
 }
 
 .input-form {
+    width: 80%;
+}
+.input-form input {
+    flex: 1;
+}
+
+.new-post-form {
     width: 100%;
     display: inline-flex;
     align-items: center;
@@ -259,11 +266,10 @@ ul.posts button:hover {
     justify-content: space-between;
     margin: 1rem 0rem 0rem;
 }
-
-
-.input-form input {
+.new-post-form input {
     flex: 1;
 }
+
 
 
 .filter-svg {
@@ -373,6 +379,7 @@ ul.posts button:hover {
 
 .post-reply {
     display: inline;
+
     button {
         /*border: 1px ridge #d5fad5;*/
         /*border-radius: 5px;*/
@@ -382,9 +389,11 @@ ul.posts button:hover {
     }
 
 }
+
 .filter-svg:hover {
     opacity: 1;
 }
+
 .indent-line {
     position: absolute;
     top: 0;
@@ -408,4 +417,15 @@ ul.posts button:hover {
     transition: filter .2s, opacity .2s;
     display: flex;
     position: relative;
+}
+
+.user {
+    padding: 6px;
+    border-radius: 3px;
+    text-align: center;
+    display: inline;
+    opacity: 0.9;
+    border: 1px dashed #b3b3b3;
+    font-size: small;
+    margin-right: 10px;
 }

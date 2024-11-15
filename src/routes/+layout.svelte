@@ -16,7 +16,7 @@
 	let postListLocal = liveQuery(() =>
 		dbDexie.posts.orderBy('id').desc().toArray()
 	);
-	let post_list_local=$state([]);
+	let post_list_local = $state([]);
 	postListLocal.subscribe((posts_local) => {
 		post_list_local = postListLocal;
 	});
@@ -27,11 +27,11 @@
 				console.log(`Successfully synced ${postListCloud.length} posts`);
 			});
 		}
-		if (userListCloud) {
-			dbDexie.users.bulkPut(userListCloud).then(() => {
-				console.log(`Successfully synced ${userListCloud.length} users`);
-			});
-		}
+		// if (userListCloud) {
+		// 	dbDexie.users.bulkPut(userListCloud).then(() => {
+		// 		console.log(`Successfully synced ${userListCloud.length} users`);
+		// 	});
+		// }
 	});
 	let just_synced = false;
 
@@ -170,6 +170,22 @@
 
 	MergeRemoteAndLocal();
 
+	function manual_update() {
+		// todo: sync data to local in a better way
+		// if (postListCloud) {
+		// 	dbDexie.posts.bulkPut(postListCloud).then(() => {
+		// 		console.log(`Successfully synced ${postListCloud.length} posts`);
+		// 	});
+		// }
+		if (userListCloud) {
+			dbDexie.users.bulkPut(userListCloud).then(() => {
+				console.log(`Successfully synced ${userListCloud.length} users`);
+			});
+		}
+		sync_status = SyncStatus.syncing;
+		invalidateAll();
+		MergeRemoteAndLocal();
+	}
 </script>
 <style>
     @import '$lib/styles.css';
@@ -189,7 +205,7 @@
 		<div class="status" id="sync-status"></div>
 		<div class="status" id="online-status">online?</div>
 		<button style="opacity: 75%; padding: 0.25rem 0.5rem; font-size: 0.7rem;"
-						onclick={() => {sync_status=SyncStatus.syncing; invalidateAll(); MergeRemoteAndLocal();}}>Update
+						onclick={manual_update}>Update
 		</button>
 	</div>
 

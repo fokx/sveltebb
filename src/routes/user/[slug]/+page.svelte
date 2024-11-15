@@ -13,7 +13,7 @@
 	}
 
 </script>
-{#await get_post_list}
+{#await get_post_list()}
 	<p></p>
 {:then user_post_list}
 	<h2>Posts by user {data.slug}</h2>
