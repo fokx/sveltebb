@@ -1,10 +1,10 @@
 <script>
-	import { getEnumName, SyncStatus } from '$lib/utils.js';
-	import { onMount } from 'svelte';
+	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { liveQuery } from 'dexie';
+	import { onMount } from 'svelte';
 
 	let { children, data } = $props();
 	let user = $derived(data.user);
@@ -15,13 +15,9 @@
 	);
 
 	let just_synced = false;
-	let previously_offline = false;
 
 	$effect(async () => {
-		if (user && $postListLocal) {
-			// console.log('$postListLocal', $postListLocal);
-			// console.log('postListCloud', postListCloud);
-			// console.log('sync_status old', sync_status);
+		if ($postListLocal) {
 			if (just_synced) {
 				just_synced = false;
 				return;
@@ -29,7 +25,7 @@
 			if (sync_status !== SyncStatus.syncing) {
 				if ($postListLocal.length === 0 && postListCloud.length === 0) {
 					sync_status = SyncStatus.empty;
-				} else if (user && (postListCloud?.length === undefined || postListCloud === null)) {
+				} else if (postListCloud?.length === undefined || postListCloud === null) {
 					// logged in, but no cloud data
 					sync_status = SyncStatus.error;
 				} else if ($postListLocal.length !== postListCloud.length) {
@@ -58,19 +54,21 @@
 		updateSyncStatus();
 		just_synced = true;
 	});
-	onMount(() => {
+
+	onMount(async () => {
+		window.previously_offline = false;
 		if (!window.indexedDB) {
 			alert('This post app is not unsupported on this browser. \nReason: Indexed DB is not supported!');
 		}
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.addEventListener('message', async event => {
 				if (event.data.type === 'ONLINE_STATUS') {
-					setOnlineIndicator(event.data.online);
+					SetOnlineIndicator(event.data.online);
 					if (!event.data.online) {
-						previously_offline = true;
+						window.previously_offline = true;
 					} else {
-						if (previously_offline) {
-							previously_offline = false;
+						if (window.previously_offline) {
+							window.previously_offline = false;
 							invalidateAll();
 							await MergeRemoteAndLocal();
 						}
@@ -82,30 +80,14 @@
 				}
 			});
 		}
-		setOnlineIndicator(true);
+		SetOnlineIndicator(true);
 	});
 
-	function updateSyncStatus() {
-		if (browser) {
-			const ele = document.getElementById('sync-status');
-			if (ele) {
-				ele.classList.remove(...Array.from(ele.classList).slice(1));
-				let name = getEnumName(SyncStatus, sync_status);
-				if (name === 'unknown') {
-					ele.textContent = 'synced?';
-				} else {
-					ele.textContent = name.replace('_', ' ');
-				}
-				ele.classList.add(name);
-			}
-		}
-	}
-
 	async function MergeRemoteAndLocal() {
-		if (!user) {
+		let update_jobs = [];
+		if (!$postListLocal) {
 			return;
 		}
-		let update_jobs = [];
 		let map_local_ids = new Map($postListLocal.map(i => [i.id, i]));
 		let map_cloud_ids = new Map(postListCloud.map(i => [i.id, i]));
 		let ids_joint = (new Set(map_local_ids.keys())).intersection((new Set(map_cloud_ids.keys())));
@@ -134,7 +116,7 @@
 		let ids_only_in_local = (new Set(map_local_ids.keys())).difference((new Set(map_cloud_ids.keys())));
 		for (let id of ids_only_in_local) {
 			let local = map_local_ids.get(id);
-			local.user_id = user.id;
+			local.user_id = (user ? user.id : USER_ID_NOT_LOGGED_IN);
 			update_jobs.push(local);
 		}
 		if (update_jobs.length > 0) {
@@ -156,26 +138,23 @@
 		updateSyncStatus();
 	}
 
-	function setOnlineIndicator(isOnline) {
+	function updateSyncStatus() {
 		if (browser) {
-			const statusElement = document.getElementById('online-status');
-			if (isOnline) {
-				// console.log('online');
-				if (statusElement) {
-					statusElement.textContent = 'online';
-					statusElement.classList.add('online');
-					statusElement.classList.remove('offline');
+			const ele = document.getElementById('sync-status');
+			if (ele) {
+				ele.classList.remove(...Array.from(ele.classList).slice(1));
+				let name = GetEnumName(SyncStatus, sync_status);
+				if (name === 'unknown') {
+					ele.textContent = 'synced?';
+				} else {
+					ele.textContent = name.replace('_', ' ');
 				}
-			} else {
-				// console.log('offline');
-				if (statusElement) {
-					statusElement.textContent = 'offline';
-					statusElement.classList.add('offline');
-					statusElement.classList.remove('online');
-				}
+				ele.classList.add(name);
 			}
 		}
 	}
+
+	MergeRemoteAndLocal();
 
 </script>
 <style>
@@ -195,7 +174,9 @@
 	<div class="header">
 		<div class="status" id="sync-status"></div>
 		<div class="status" id="online-status">online?</div>
-		<button style="opacity: 75%;" onclick={() => {sync_status=SyncStatus.syncing; invalidateAll();}}>Update</button>
+		<button style="opacity: 75%;"
+						onclick={() => {sync_status=SyncStatus.syncing; invalidateAll(); MergeRemoteAndLocal();}}>Update
+		</button>
 	</div>
 
 </nav>

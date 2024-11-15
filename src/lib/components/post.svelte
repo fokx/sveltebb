@@ -1,7 +1,7 @@
 <script>
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { enhance } from '$app/forms';
-	import { gen_post_id, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
+	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 
 	let {
 		post = $bindable(),
@@ -32,7 +32,7 @@
 		window.preventDuplicateKeyPresses = true;
 		window.setTimeout(function() { window.preventDuplicateKeyPresses = false; }, 500 );
 
-		new_post_id = gen_post_id();
+		new_post_id = GeneratePostId();
 		sync_status = SyncStatus.syncing;
 		dbDexie.posts.add({
 			id: new_post_id,

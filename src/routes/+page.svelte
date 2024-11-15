@@ -1,13 +1,10 @@
 <script>
-	import { onMount } from 'svelte';
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { enhance } from '$app/forms';
 	import PostList from '$lib/components/post-list.svelte';
 	import { derived } from 'svelte/store';
 	import { liveQuery } from 'dexie';
-	import { gen_post_id, getEnumName, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
-	import { browser } from '$app/environment';
-	import { invalidateAll } from '$app/navigation';
+	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 
 	// /** @type {{ data: import('./$types').PageData }} */
 	let {
@@ -44,7 +41,7 @@
 		window.preventDuplicateKeyPresses = true;
 		window.setTimeout(function() { window.preventDuplicateKeyPresses = false; }, 500 );
 
-		new_post_id = gen_post_id();
+		new_post_id = GeneratePostId();
 		sync_status = SyncStatus.syncing;
 		dbDexie.posts.add({
 			id: new_post_id,

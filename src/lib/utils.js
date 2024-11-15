@@ -1,5 +1,7 @@
 import { PUBLIC_POST_ID_LENGTH } from '$env/static/public';
 import { generateRandomString } from '@oslojs/crypto/random';
+import { browser } from '$app/environment';
+import { dbDexie } from '$lib/db-dexie.js';
 
 const random = {
 	read(bytes) {
@@ -7,16 +9,16 @@ const random = {
 	}
 };
 
-export function generateId(length) {
+export function GenerateId(length) {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
 	return generateRandomString(random, alphabet, length);
 }
 
-export function gen_post_id() {
-	return generateId(PUBLIC_POST_ID_LENGTH);
+export function GeneratePostId() {
+	return GenerateId(PUBLIC_POST_ID_LENGTH);
 }
 
-export function make_enum(arr) {
+export function MakeEnum(arr) {
 	let obj = Object.create(null);
 	for (let val of arr) {
 		obj[val] = Symbol(val);
@@ -24,7 +26,7 @@ export function make_enum(arr) {
 	return Object.freeze(obj);
 }
 
-export function getEnumName(enumObj, value) {
+export function GetEnumName(enumObj, value) {
 	for (const key in enumObj) {
 		if (enumObj[key] === value) {
 			return key;
@@ -34,7 +36,7 @@ export function getEnumName(enumObj, value) {
 	// return null;
 }
 
-export const SyncStatus = make_enum([
+export const SyncStatus = MakeEnum([
 	'local',
 	'divergent',
 	'syncing',
@@ -46,7 +48,28 @@ export const SyncStatus = make_enum([
 	'failed'
 ]);
 
-export function sleep(ms) {
+export function Sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms ?? 200));
 }
 export const USER_ID_NOT_LOGGED_IN = -1;
+export function SetOnlineIndicator(isOnline) {
+	if (browser) {
+		const statusElement = document.getElementById('online-status');
+		if (isOnline) {
+			// console.log('online');
+			if (statusElement) {
+				statusElement.textContent = 'online';
+				statusElement.classList.add('online');
+				statusElement.classList.remove('offline');
+			}
+		} else {
+			// console.log('offline');
+			if (statusElement) {
+				statusElement.textContent = 'offline';
+				statusElement.classList.add('offline');
+				statusElement.classList.remove('online');
+			}
+		}
+	}
+}
+
