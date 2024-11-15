@@ -15,7 +15,8 @@
 		"test:unit": "vitest",
 		"generate-migrations:db": "drizzle-kit generate --config=src/lib/server/db/drizzle.config.js",
 		"push:db": "drizzle-kit push --config=src/lib/server/db/drizzle.config.js",
-		"migrate:db": "node src/lib/server/db/migrate.js"
+		"migrate:db": "node src/lib/server/db/migrate.js",
+		"import:user": "node src/lib/server/db/import-user.js"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.48.2",

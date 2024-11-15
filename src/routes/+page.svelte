@@ -72,7 +72,7 @@
 	</form>
 
 	<br />
-	<PostList postList={postListNotDeletedMainLocal} user={user} show_author={true} />
+	<PostList data={data}  postList={postListNotDeletedMainLocal} user={user} show_author={true} />
 	<p>You don't need to click the <kbd>Update</kbd> button frequently. </p>
 	<p>Normally, you just have to wait for a few seconds for changes made by others to appear.</p>
 </div>

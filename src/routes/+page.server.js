@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db/client.js';
-import { posts } from '$lib/server/db/schema.ts';
+import { posts } from '$lib/server/db/schema.js';
 import { USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 
 export const actions = {

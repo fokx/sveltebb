@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db/client.js';
-import { posts } from '$lib/server/db/schema.ts';
+import { posts } from '$lib/server/db/schema.js';
 import { eq } from 'drizzle-orm';
 
 /** @type {import('./$types').RequestHandler} */

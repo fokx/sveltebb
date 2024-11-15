@@ -1,5 +1,5 @@
 <script>
-	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
+	import { GetEnumName, SetOnlineIndicator, SyncStatus, USER_ID_NOT_LOGGED_IN, GetUserName } from '$lib/utils.js';
 	import { invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { dbDexie } from '$lib/db-dexie.js';
@@ -8,12 +8,20 @@
 
 	let { children, data } = $props();
 	let user = $derived(data.user);
+	let cloud_users = $derived(data.cloud_users);
 	let postListCloud = $derived(data.cloud_posts);
+	let userListCloud = $derived(data.cloud_users);
 	let sync_status = $state(SyncStatus.unknown);
 	let postListLocal = liveQuery(() =>
 		dbDexie.posts.orderBy('id').desc().toArray()
 	);
-
+	$effect(() => {
+		if (userListCloud) {
+			dbDexie.users.bulkPut(userListCloud).then(() => {
+				console.log(`Successfully synced ${userListCloud.length} users`);
+			});
+		}
+	});
 	let just_synced = false;
 
 	$effect(async () => {
@@ -159,7 +167,7 @@
 	<a href="/" style="display: inline;">SvelteBB</a>
 	{#if user}
 		<span style="display: inline; ">
-			<a href="/my-posts">{user.id}</a>
+			<a href="/my-posts">{GetUserName(cloud_users, user.id)}</a>
 		</span>
 	{:else}
 		<span>You are a guest.</span>

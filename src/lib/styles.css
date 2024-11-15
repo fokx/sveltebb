@@ -373,24 +373,18 @@ ul.posts button:hover {
 
 .post-reply {
     display: inline;
-
     button {
-        border: 1px ridge #d5fad5;
-        border-radius: 5px;
-        background-color: #f9f3f3;
+        /*border: 1px ridge #d5fad5;*/
+        /*border-radius: 5px;*/
+        /*background-color: #f9f3f3;*/
         padding: 0.25rem 0.5rem; /* Adjust padding to make the button smaller */
         font-size: 0.7rem; /* Adjust font size to make the button smaller */
     }
 
-    button:hover {
-        background: var(--link-hover)
-    }
-
-    button:active {
-        background: var(--link-active)
-    }
 }
-
+.filter-svg:hover {
+    opacity: 1;
+}
 .indent-line {
     position: absolute;
     top: 0;

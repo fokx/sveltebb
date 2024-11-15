@@ -1,7 +1,7 @@
 <script>
 	import { dbDexie } from '$lib/db-dexie.js';
 	import { enhance } from '$app/forms';
-	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
+	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN, GetUserName } from '$lib/utils.js';
 	import { liveQuery } from 'dexie';
 	import Self from './post.svelte';
 	import { fly, slide } from 'svelte/transition';
@@ -13,6 +13,7 @@
 		indent = $bindable()
 	} = $props();
 	let user = $derived(data.user);
+	let cloud_users = $derived(data.cloud_users);
 
 	let newItem = $state('');
 	let new_post_id;
@@ -42,10 +43,13 @@
 	{/each}
 	<div style="display:inline;">
 		<span>{post.text}</span>
-		<span style="font-size: x-small;">({post.user_id})</span>
+		<span style="font-size: x-small;">({GetUserName(cloud_users, post.user_id)})</span>
 		{#if indent !== 0}
 			<div class="post-reply">
-				<button onclick={show_reply_form=!show_reply_form}>{show_reply_form ? 'Cancel' : 'Reply'}</button>
+				{#if !show_reply_form}
+					<button aria-label="toggle reply field" style="background: url(/reply.svg) no-repeat 50% 50%;"
+									class="filter-svg" onclick={show_reply_form=!show_reply_form}></button>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -92,7 +96,16 @@
 				};
 			}}>
 			<input bind:value={newItem} name="content" placeholder="reply.." required type="text" />
-			<button aria-label="Add" disabled={!newItem}>Reply</button>
+			<button aria-label="Reply" disabled={!newItem} style="background: url(/reply.svg) no-repeat 50% 50%;"
+							class="filter-svg"></button>
+			{#if indent !== 0}
+				<div class="post-reply">
+					{#if show_reply_form}
+						<button aria-label="toggle reply field" style="background: url(/xmark.svg) no-repeat 50% 50%;"
+										class="filter-svg" onclick={show_reply_form=!show_reply_form}></button>
+					{/if}
+				</div>
+			{/if}
 		</form>
 
 	{/if}

@@ -28,9 +28,9 @@
 	<h2>My Posts</h2>
 	{#if user}
 		<h3>My Main Posts</h3>
-		<PostList postList={postListDeletedMainLocal} user={user} show_author={false} />
+		<PostList data={data} postList={postListDeletedMainLocal} user={user} show_author={false} />
 		<h3>My Replies</h3>
-		<PostList postList={postListDeletedRepliesLocal} user={user} show_author={false} />
+		<PostList data={data}  postList={postListDeletedRepliesLocal} user={user} show_author={false} />
 	{:else}
 		<p><em>not logged in</em></p>
 	{/if}
