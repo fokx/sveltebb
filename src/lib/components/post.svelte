@@ -29,14 +29,25 @@
 
 </script>
 
-<div class="post" style="margin-left: { indent * 20}px;">
+
+<div class="post" style="position: relative; margin-left: { indent * 20}px;">
 	{#if !post}
 		<p style="color: red">error: post {post} is null</p>
 	{:else}
-		<span>{post.text}</span>
-		<span style="font-size: x-small;">({post.user_id})</span>
-		<div class="post-reply">
-			<button onclick={show_reply_form=!show_reply_form}>Reply</button>
+
+		<div style="display:inline; margin-right: 2px">
+			{#each Array(indent + 1) as _, j}
+				<div class="indent-line" style="left: {(j-indent) * 20}px;"></div>
+			{/each}
+		</div>
+		<div style="display:inline;">
+			<span>{post.text}</span>
+			<span style="font-size: x-small;">({post.user_id})</span>
+			{#if indent !== 0}
+				<div class="post-reply">
+					<button onclick={show_reply_form=!show_reply_form}>{show_reply_form ? 'Cancel' : 'Reply'}</button>
+				</div>
+			{/if}
 		</div>
 
 		{#if indent === 0 || show_reply_form}
