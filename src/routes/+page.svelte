@@ -9,196 +9,30 @@
 	import { browser } from '$app/environment';
 	import { invalidateAll } from '$app/navigation';
 
-	/** @type {{ data: import('./$types').PageData }} */
-	let { data } = $props();
+	// /** @type {{ data: import('./$types').PageData }} */
+	let {
+		data = $bindable(),
+		sync_status = $bindable()
+	} = $props();
 	let user = $derived(data.user);
 	let postListCloud = $derived(data.cloud_posts);
 	let newItem = $state('');
-	let postListNotDeletedLocal = $state();
+	let postListNotDeletedMainLocal = $state();
 	let new_post_id;
-	let previously_offline = false;
-	let just_synced = false;
 	let postListLocal = liveQuery(() =>
 		dbDexie.posts.orderBy('id').desc().toArray()
 	);
 
-	let sync_status = $state(SyncStatus.unknown);
 	postListLocal.subscribe((posts_local) => {
-			postListNotDeletedLocal = posts_local.filter(t => !t.deleted);
+			postListNotDeletedMainLocal = posts_local.filter(t => t.is_main_post).filter(t => !t.deleted);
 		}
 	);
-
-	$effect(async () => {
-		if (user && $postListLocal) {
-			// console.log('$postListLocal', $postListLocal);
-			// console.log('postListCloud', postListCloud);
-			// console.log('sync_status old', sync_status);
-			if (just_synced) {
-				just_synced = false;
-				return;
-			}
-			if (sync_status !== SyncStatus.syncing) {
-				if ($postListLocal.length === 0 && postListCloud.length === 0) {
-					sync_status = SyncStatus.empty;
-				} else if (user && (postListCloud?.length === undefined || postListCloud === null)) {
-					// logged in, but no cloud data
-					sync_status = SyncStatus.error;
-				} else if ($postListLocal.length !== postListCloud.length) {
-					// console.log('$postListLocal.length !== postListCloud.length', $postListLocal.length, postListCloud.length);
-					sync_status = SyncStatus.divergent;
-				} else {
-					let all_match = $postListLocal.every((localPost, index) => {
-						// in this branch, length is the same, also assert that the order is the same
-						const cloudPost = postListCloud[index];
-						return (
-							localPost.id === cloudPost.id &&
-							localPost.text === cloudPost.text &&
-							localPost.done === cloudPost.done &&
-							localPost.deleted === cloudPost.deleted
-						);
-					});
-					if (all_match) {
-						sync_status = SyncStatus.synced;
-					} else {
-						sync_status = SyncStatus.divergent;
-					}
-				}
-			}
-			await MergeRemoteAndLocal();
-		}
-		updateSyncStatus();
-		just_synced = true;
-	});
-
-	onMount(() => {
-		if (!window.indexedDB) {
-			alert('This post app is not unsupported on this browser. \nReason: Indexed DB is not supported!');
-		}
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.addEventListener('message', async event => {
-				if (event.data.type === 'ONLINE_STATUS') {
-					setOnlineIndicator(event.data.online);
-					if (!event.data.online) {
-						previously_offline = true;
-					} else {
-						if (previously_offline) {
-							previously_offline = false;
-							invalidateAll();
-							await MergeRemoteAndLocal();
-						}
-					}
-				}
-				if (event.data.type === 'SYNC_STATUS') {
-					invalidateAll();
-					await MergeRemoteAndLocal();
-				}
-			});
-		}
-		setOnlineIndicator(true);
-	});
-
-	function updateSyncStatus() {
-		if (browser) {
-			const ele = document.getElementById('sync-status');
-			if (ele) {
-				ele.classList.remove(...Array.from(ele.classList).slice(1));
-				let name = getEnumName(SyncStatus, sync_status);
-				if (name === 'unknown') {
-					ele.textContent = 'synced?';
-				} else {
-					ele.textContent = name.replace('_', ' ');
-				}
-				ele.classList.add(name);
-			}
-		}
-	}
-
-	async function MergeRemoteAndLocal() {
-		if (!user) {
-			return;
-		}
-		let update_jobs = [];
-		let map_local_ids = new Map($postListLocal.map(i => [i.id, i]));
-		let map_cloud_ids = new Map(postListCloud.map(i => [i.id, i]));
-		let ids_joint = (new Set(map_local_ids.keys())).intersection((new Set(map_cloud_ids.keys())));
-		for (let id of ids_joint) {
-			let local = map_local_ids.get(id);
-			let cloud = map_cloud_ids.get(id);
-			if (!(local.text === cloud.text && local.done === cloud.done && local.deleted === cloud.deleted)) {
-				if (local.updated_at < cloud.updated_at) {
-					dbDexie.posts.filter(t => t.id === id).modify({
-						text: cloud.text,
-						done: cloud.done,
-						deleted: cloud.deleted,
-						// synced: false,
-						updated_at: cloud.updated_at
-					});
-				} else {
-					update_jobs.push(local);
-				}
-			}
-		}
-		let ids_only_in_cloud = (new Set(map_cloud_ids.keys())).difference((new Set(map_local_ids.keys())));
-		for (let id of ids_only_in_cloud) {
-			let cloud = map_cloud_ids.get(id);
-			dbDexie.posts.add(cloud);
-		}
-		let ids_only_in_local = (new Set(map_local_ids.keys())).difference((new Set(map_cloud_ids.keys())));
-		for (let id of ids_only_in_local) {
-			let local = map_local_ids.get(id);
-			local.user_id = user.id;
-			update_jobs.push(local);
-		}
-		if (update_jobs.length > 0) {
-			const response = await fetch('/api/sync-data', {
-				method: 'POST',
-				body: JSON.stringify(update_jobs),
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			});
-			if (response.status === 200) {
-				sync_status = SyncStatus.just_synced;
-			} else {
-				sync_status = SyncStatus.failed;
-				const { message } = await response.json();
-				// console.log('message', message);
-			}
-		}
-		updateSyncStatus();
-	}
-
-	function setOnlineIndicator(isOnline) {
-		if (browser) {
-			const statusElement = document.getElementById('online-status');
-			if (isOnline) {
-				// console.log('online');
-				if (statusElement) {
-					statusElement.textContent = 'online';
-					statusElement.classList.add('online');
-					statusElement.classList.remove('offline');
-				}
-			} else {
-				// console.log('offline');
-				if (statusElement) {
-					statusElement.textContent = 'offline';
-					statusElement.classList.add('offline');
-					statusElement.classList.remove('online');
-				}
-			}
-		}
-	}
 
 </script>
 
 <div class="centered">
-	<div class="header">
-		<div class="status" id="sync-status"></div>
-		<div class="status" id="online-status">online?</div>
-		<button style="opacity: 75%;" onclick={() => {sync_status=SyncStatus.syncing; invalidateAll();}}>Update</button>
-	</div>
 
-	<form action="?/createpost" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+	<form action="?/create_post" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 		// debounce the form submission
 		formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -241,7 +75,7 @@
 	</form>
 
 	<br />
-	<PostList postList={postListNotDeletedLocal} user={user} sync_status={sync_status} show_author={true} />
+	<PostList postList={postListNotDeletedMainLocal} user={user} show_author={true} />
 	<p>You don't need to click the <kbd>Update</kbd> button frequently. </p>
 	<p>Normally, you just have to wait for a few seconds for changes made by others to appear.</p>
 </div>

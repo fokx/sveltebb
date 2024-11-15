@@ -19,7 +19,7 @@ export async function POST(event) {
 						deleted: a.deleted,
 						is_main_post: a.is_main_post,
 						main_post_id: a.main_post_id,
-						reply_to: a?.reply_to,
+						reply_to_post_id: a?.reply_to_post_id,
 					});
 				} else {
 					existing = existing[0];

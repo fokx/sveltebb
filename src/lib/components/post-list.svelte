@@ -4,9 +4,7 @@
 	let {
 		postList = $bindable(),
 		user,
-		isDeletedListPage = false,
 		show_author = true,
-		sync_status = $bindable()
 	} = $props();
 	let postListSorted = $derived(postList ? postList.toSorted((b, a) => new Date(a.created_at) - new Date(b.created_at)) : []);
 	let checked = false;

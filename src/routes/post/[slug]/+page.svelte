@@ -5,6 +5,7 @@
 
 	let { data } = $props();
 	console.log(data.slug);
+
 	let postsLocal = liveQuery(() =>
 		dbDexie.posts.filter(t => t.main_post_id === data.slug).toArray()
 	);
@@ -19,9 +20,9 @@
 	);
 </script>
 {#if main_post}
-	<Post post={main_post} />
+	<Post post={main_post} data={data} />
 	{#each reply_posts as post, index (post.id)}
-		<Post post={post} />
+		<Post post={post}  data={data}/>
 	{/each}
 {:else}
 	<p>Post not found</p>

@@ -3,7 +3,7 @@ import { posts } from '$lib/server/db/schema.ts';
 import { USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 
 export const actions = {
-	createpost: async function ({ locals, request }) {
+	create_post: async function ({ locals, request }) {
 		let user = locals.user;
 		const formData = await request.formData();
 		let user_id = user ? user.id : USER_ID_NOT_LOGGED_IN;
