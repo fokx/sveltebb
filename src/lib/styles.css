@@ -371,8 +371,9 @@ ul.posts button:hover {
     }
 }
 
-.post-reply{
+.post-reply {
     display: inline;
+
     button {
         border: 1px ridge #d5fad5;
         border-radius: 5px;
@@ -398,4 +399,19 @@ ul.posts button:hover {
     width: 1px;
     background-color: #000;
     opacity: 20%;
+}
+
+.post {
+    -webkit-user-select: none;
+    user-select: none;
+    background: var(--bg-1);
+    filter: drop-shadow(2px 3px 6px #0000001a);
+    border-radius: 5px;
+    align-items: center;
+    gap: .5em;
+    /*margin: 0 0 0 .5em;*/
+    padding: .5em .5em .5em 1em;
+    transition: filter .2s, opacity .2s;
+    display: flex;
+    position: relative;
 }

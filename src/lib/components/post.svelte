@@ -4,6 +4,7 @@
 	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { liveQuery } from 'dexie';
 	import Self from './post.svelte';
+	import { fly, slide } from 'svelte/transition';
 
 	let {
 		post = $bindable(),
@@ -29,29 +30,28 @@
 
 </script>
 
+<!--{#if !post}-->
+<!--	<p style="color: red">error: post {post} is null</p>-->
+<!--{:else}-->
+<!--	<div style="display:inline; margin-right: 2px">-->
+<!--	</div>-->
 
-<div class="post" style="position: relative; margin-left: { indent * 20}px;">
-	{#if !post}
-		<p style="color: red">error: post {post} is null</p>
-	{:else}
+<div in:fly={{ y: 20 }} out:slide class="post" style="margin-left: { indent * 20}px;">
+	{#each Array(indent + 1) as _, j}
+		<div class="indent-line" style="left: {(j-indent) * 20 - 3}px;"></div>
+	{/each}
+	<div style="display:inline;">
+		<span>{post.text}</span>
+		<span style="font-size: x-small;">({post.user_id})</span>
+		{#if indent !== 0}
+			<div class="post-reply">
+				<button onclick={show_reply_form=!show_reply_form}>{show_reply_form ? 'Cancel' : 'Reply'}</button>
+			</div>
+		{/if}
+	</div>
 
-		<div style="display:inline; margin-right: 2px">
-			{#each Array(indent + 1) as _, j}
-				<div class="indent-line" style="left: {(j-indent) * 20}px;"></div>
-			{/each}
-		</div>
-		<div style="display:inline;">
-			<span>{post.text}</span>
-			<span style="font-size: x-small;">({post.user_id})</span>
-			{#if indent !== 0}
-				<div class="post-reply">
-					<button onclick={show_reply_form=!show_reply_form}>{show_reply_form ? 'Cancel' : 'Reply'}</button>
-				</div>
-			{/if}
-		</div>
-
-		{#if indent === 0 || show_reply_form}
-			<form action="?/create_reply" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+	{#if indent === 0 || show_reply_form}
+		<form action="?/create_reply" class="input-form" method="post" use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 				// debounce the form submission
 				formElement.addEventListener('submit', (e) => {
 					e.preventDefault();
@@ -91,12 +91,14 @@
 					}
 				};
 			}}>
-				<input bind:value={newItem} name="content" placeholder="reply.." required type="text" />
-				<button aria-label="Add" disabled={!newItem}>Reply</button>
-			</form>
-		{/if}
+			<input bind:value={newItem} name="content" placeholder="reply.." required type="text" />
+			<button aria-label="Add" disabled={!newItem}>Reply</button>
+		</form>
+
 	{/if}
+
 </div>
+<!--{/if}-->
 
 {#each repliesToThisPost as post_direct_reply, index (post_direct_reply.id)}
 	<Self post={post_direct_reply} data={data} sync_status={sync_status} indent={indent +1} />
