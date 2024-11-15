@@ -3,28 +3,20 @@
 	import { liveQuery } from 'dexie';
 	import Post from '$lib/components/post.svelte';
 
-	let { data } = $props();
+
+	let { data, sync_status = $bindable() } = $props();
+	console.log('sync_status',sync_status);
 	console.log(data.slug);
 
-	let postsLocal = liveQuery(() =>
-		dbDexie.posts.filter(t => t.main_post_id === data.slug).toArray()
+	let postLocal = liveQuery(() =>
+		dbDexie.posts.filter(t => t.id === data.slug).first()
 	);
 
-	let main_post = $state();
-	let reply_posts = $state();
 
-	postsLocal.subscribe((posts_local) => {
-			main_post = posts_local.filter(t => t.is_main_post)[0];
-			reply_posts = posts_local.filter(t => !t.is_main_post);
-		}
-	);
 </script>
-{#if main_post}
-	<Post post={main_post} data={data} />
-	{#each reply_posts as post, index (post.id)}
-		<Post post={post}  data={data}/>
-	{/each}
+{#if (!$postLocal)}
+	<p>Post <code>{data.slug}</code> not found</p>
 {:else}
-	<p>Post not found</p>
+	<Post post={$postLocal} data={data} sync_status={sync_status} indent={0}/>
 {/if}
 

@@ -88,6 +88,7 @@
 		if (!$postListLocal) {
 			return;
 		}
+		// console.log(postListCloud);
 		let map_local_ids = new Map($postListLocal.map(i => [i.id, i]));
 		let map_cloud_ids = new Map(postListCloud.map(i => [i.id, i]));
 		let ids_joint = (new Set(map_local_ids.keys())).intersection((new Set(map_cloud_ids.keys())));
@@ -96,13 +97,7 @@
 			let cloud = map_cloud_ids.get(id);
 			if (!(local.text === cloud.text && local.done === cloud.done && local.deleted === cloud.deleted)) {
 				if (local.updated_at < cloud.updated_at) {
-					dbDexie.posts.filter(t => t.id === id).modify({
-						text: cloud.text,
-						done: cloud.done,
-						deleted: cloud.deleted,
-						// synced: false,
-						updated_at: cloud.updated_at
-					});
+					dbDexie.posts.filter(t => t.id === id).modify(cloud);
 				} else {
 					update_jobs.push(local);
 				}
