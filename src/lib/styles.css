@@ -432,3 +432,9 @@ is_first_post {
     font-size: small;
     margin-right: 10px;
 }
+.original-post {
+    border-radius: 3px;
+    padding: 6px;
+    border: 1px dashed #e8e0e0;
+
+}
