@@ -2,6 +2,8 @@ import { PUBLIC_POST_ID_LENGTH } from '$env/static/public';
 import { generateRandomString } from '@oslojs/crypto/random';
 import { browser } from '$app/environment';
 import { dbDexie } from '$lib/db-dexie.js';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 const random = {
 	read(bytes) {
@@ -51,7 +53,9 @@ export const SyncStatus = MakeEnum([
 export function Sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms ?? 200));
 }
+
 export const USER_ID_NOT_LOGGED_IN = -1;
+
 export function SetOnlineIndicator(isOnline) {
 	if (browser) {
 		const statusElement = document.getElementById('online-status');
@@ -79,4 +83,9 @@ export async function getUser(user_id) {
 	} catch (e) {
 		console.log('getUser error', user_id, e);
 	}
+}
+
+export function display_time(d) {
+	dayjs.extend(relativeTime);
+	return dayjs(dayjs(d)).fromNow();
 }

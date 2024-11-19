@@ -1,6 +1,6 @@
 <script>
 	import { dbDexie } from '$lib/db-dexie.js';
-	import { GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
+	import { display_time, GeneratePostId, SyncStatus, USER_ID_NOT_LOGGED_IN } from '$lib/utils.js';
 	import { liveQuery } from 'dexie';
 	import Self from './post.svelte';
 	import { fly, slide } from 'svelte/transition';
@@ -66,8 +66,10 @@
 
 {#snippet post_data(post)}
 	<span>{post.text}</span>
-	<div>{post.created_at}</div>
-	<div>{post.updated_at}</div>
+	<div>created at: {display_time(post.created_at)}</div>
+	{#if (post.updated_at- post.created_at) <  5 * 60 * 1000}
+		<div>updated at: {display_time(post.updated_at)}</div>
+	{/if}
 {/snippet}
 
 
