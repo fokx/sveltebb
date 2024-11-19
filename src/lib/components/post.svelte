@@ -64,13 +64,19 @@
 	}
 </script>
 
+{#snippet post_data(post)}
+	<span>{post.text}</span>
+	<div>{post.created_at}</div>
+	<div>{post.updated_at}</div>
+{/snippet}
+
 
 {#if indent === 0}
 	<div class="original-post">
 		<div style="display: block; padding: 6px;">
 			<User data={data} user_id={post.user_id} />
 		</div>
-		<span>{post.text}</span>
+		{@render post_data(post)}
 	</div>
 {/if}
 
@@ -80,7 +86,7 @@
 			<div class="indent-line" style="left: {(j-indent) * 20 - 3}px;"></div>
 		{/each}
 		<div style="display:inline;">
-			<span>{post.text}</span>
+			{@render post_data(post)}
 			<User data={data} user_id={post.user_id} />
 			{#if indent !== 0}
 				<div class="post-reply">

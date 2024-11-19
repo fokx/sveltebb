@@ -73,3 +73,10 @@ export function SetOnlineIndicator(isOnline) {
 	}
 }
 
+export async function getUser(user_id) {
+	try {
+		return await dbDexie.users.get(parseInt(user_id));
+	} catch (e) {
+		console.log('getUser error', user_id, e);
+	}
+}

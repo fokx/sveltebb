@@ -1,11 +1,11 @@
 <script>
-	import { dbDexie } from '$lib/db-dexie.js';
+	import { getUser } from '$lib/utils.js';
 	import { PUBLIC_AVATAR_DEFAULT_URL, PUBLIC_AVATAR_HOST } from '$env/static/public';
 
 	let {
 		data = $bindable(),
 		user_id = $bindable(),
-		href = $bindable(null),
+		href = $bindable(null)
 	} = $props();
 	let cloud_users = $derived(data.cloud_users);
 
@@ -22,18 +22,11 @@
 			return PUBLIC_AVATAR_HOST + a_t.replace('{size}', '16');
 		} else if (a_t.includes('{size}')) {
 			return PUBLIC_AVATAR_HOST + a_t.replace('{size}', '288');
-		} else{
+		} else {
 			return PUBLIC_AVATAR_HOST + a_t;
 		}
 	}
 
-	async function getUser(user_id) {
-		try {
-			return await dbDexie.users.get(parseInt(user_id));
-		} catch (e) {
-			console.log('getUser error', user_id, e);
-		}
-	}
 
 </script>
 
@@ -42,13 +35,13 @@
 		{#await getUser(user_id)}
 			user: {user_id}
 		{:then user}
-				<img src={getAvatarUrl(user)} alt="User Avatar" width="16" height="16" />
-				{user?.username}
+			<img src={getAvatarUrl(user)} alt="User Avatar" width="16" height="16" />
+			{user?.username}
 		{:catch error}
 			<div style="color: red">{error.message} user: {user_id}</div>
 		{/await}
 
 	</div>
 
-	
+
 </a>

@@ -24,7 +24,6 @@
 
 
 <div class="centered">
-
 	<h2>My Posts</h2>
 	{#if user}
 		<h3>Original Posts</h3>
@@ -34,6 +33,5 @@
 	{:else}
 		<p><em>not logged in</em></p>
 	{/if}
-
 
 </div>
