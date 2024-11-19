@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 # rake custom:export-users > users.json
 # rake custom:export-users > /shared/users.json
+# pnpm import:user
 desc "Export all users without sensitive data"
 task "custom:export-users" => :environment do
   require 'json'
@@ -17,3 +18,4 @@ task "custom:export-users" => :environment do
   end
   puts a.to_json
 end
+

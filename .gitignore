@@ -29,4 +29,5 @@ src/lib/server/db/sqlite.db
 /sqlite.db
 /lucia.db
 
+*.db
 users.json
