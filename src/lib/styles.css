@@ -252,10 +252,14 @@ ul.posts button:hover {
 }
 
 .input-form {
-    width: 80%;
+    width: 100%;
 }
 .input-form input {
     flex: 1;
+}
+
+is_first_post {
+    background: #73c1fc;
 }
 
 .new-post-form {
@@ -269,7 +273,6 @@ ul.posts button:hover {
 .new-post-form input {
     flex: 1;
 }
-
 
 
 .filter-svg {

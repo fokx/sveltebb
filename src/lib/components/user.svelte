@@ -5,7 +5,7 @@
 	let {
 		data = $bindable(),
 		user_id = $bindable(),
-		href = $bindable(null)
+		href = $bindable(null),
 	} = $props();
 	let cloud_users = $derived(data.cloud_users);
 

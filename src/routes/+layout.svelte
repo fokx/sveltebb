@@ -21,12 +21,12 @@
 		post_list_local = postListLocal;
 	});
 	$effect(() => {
-		// todo: sync users to local in a better way
-		if (postListCloud){
-			dbDexie.posts.bulkPut(postListCloud).then(() => {
-				console.log(`Successfully synced ${postListCloud.length} posts`);
-			});
-		}
+		// // todo: sync users to local in a better way
+		// if (postListCloud){
+		// 	dbDexie.posts.bulkPut(postListCloud).then(() => {
+		// 		console.log(`Successfully synced ${postListCloud.length} posts`);
+		// 	});
+		// }
 		// if (userListCloud) {
 		// 	dbDexie.users.bulkPut(userListCloud).then(() => {
 		// 		console.log(`Successfully synced ${userListCloud.length} users`);
@@ -94,7 +94,7 @@
 					}
 				}
 				if (event.data.type === 'SYNC_STATUS') {
-					invalidateAll();
+					// invalidateAll();
 					await MergeRemoteAndLocal();
 				}
 			});

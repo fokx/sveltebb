@@ -4,20 +4,16 @@
 
 	let { data, sync_status = $bindable() } = $props();
 
-	async function getPost() {
-		try {
-			return await dbDexie.posts.get(data.slug);
-		} catch (e) {
-			console.log('getPost error', e);
-		}
-	}
-
 </script>
 
-{#await getPost()}
-	<p></p>
+{#await dbDexie.posts.get(data.slug)}
+	<p>loading..</p>
 {:then post}
-	<Post post={post} data={data} sync_status={sync_status} indent={0} />
+	{#if post}
+		<Post post={post} data={data} sync_status={sync_status} indent={0} />
+	{:else}
+		<p style="color: red">Post <code>{data.slug}</code> not found</p>
+	{/if}
 {:catch error}
 	<p style="color: red">Post <code>{data.slug}</code> not found with {error.message}</p>
 {/await}
