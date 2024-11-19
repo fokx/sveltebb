@@ -7,7 +7,7 @@
 		postList = $bindable(),
 		show_author = true
 	} = $props();
-	let postListSorted = $derived(postList ? postList.toSorted((a, b) => a.created_at - b.created_at) : []);
+	let postListSorted = $derived(postList ? postList.toSorted((b, a) => a.created_at - b.created_at) : []);
 	let checked = false;
 	let new_text;
 

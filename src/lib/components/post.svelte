@@ -6,7 +6,6 @@
 	import { fly, slide } from 'svelte/transition';
 	import User from '$lib/components/user.svelte';
 	import { enhance } from '$app/forms';
-	import { afterNavigate } from '$app/navigation';
 
 	let {
 		post = $bindable(),
@@ -66,9 +65,10 @@
 
 {#snippet post_data(post)}
 	<span>{post.text}</span>
-	<div>created at: {display_time(post.created_at)}</div>
-	{#if (post.updated_at- post.created_at) <  5 * 60 * 1000}
+	{#if (post.updated_at - post.created_at) > 5 * 60 * 1000}
 		<div>updated at: {display_time(post.updated_at)}</div>
+	{:else }
+		<div>created at: {display_time(post.created_at)}</div>
 	{/if}
 {/snippet}
 
@@ -102,7 +102,7 @@
 	{/if}
 
 	{#if indent === 0 || show_reply_form}
-		<form  id={indent === 0 ? undefined : 'post-reply-input'}
+		<form id={indent === 0 ? undefined : 'post-reply-input'}
 					class:is_first_post={post.is_main_post}
 					action="?/create_reply" class="input-form"
 					method="post" use:enhance={({formElement,
@@ -155,7 +155,7 @@
 			{#if indent === 0}
 				<input bind:value={newItem} name="content" placeholder="reply.."
 							 required type="text" />
-				{:else}
+			{:else}
 				<input use:myaction bind:this={inputElement} bind:value={newItem} name="content" placeholder="reply.."
 							 required type="text" />
 			{/if}

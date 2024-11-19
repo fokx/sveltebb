@@ -1,12 +1,11 @@
 import * as dotenv from 'dotenv';
 import { db } from './client.js';
-import { users } from './schema.js';
+import { disposts } from './schema.js';
 import { promises as fs } from 'node:fs';
 
 dotenv.config();
-// console.log(process.env.DB_URL);
 const filePath = 'disposts.json';
-// let result = await db.select().from(users);
+let result = await db.select().from(users);
 // console.log(result);
 // result = await db.select().from(posts);
 // console.log(result);

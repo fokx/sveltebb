@@ -32,6 +32,24 @@ export const posts = sqliteTable('posts', {
 	...common_timestamps
 });
 
+export const disposts = sqliteTable('posts', {
+	id: integer()
+		.primaryKey()
+		.notNull(),
+	raw: text({ length: 65535 }).notNull(),
+	cooked: text({ length: 65535 }).notNull(),
+	post_number: integer().notNull(),
+	topic_id: integer().notNull(),
+	user_id: integer().notNull(),
+	created_at: integer({ mode: 'timestamp' }),
+	updated_at: integer({ mode: 'timestamp' }),
+	reply_to_post_number: integer(),
+	reply_to_user_id: integer(),
+	reply_count: integer(),
+	like_count: integer(),
+	word_count: integer(),
+});
+
 export const users = sqliteTable('users', {
 	id: integer().primaryKey().notNull(),
 	username: text({ length: 65535 }).notNull(),
